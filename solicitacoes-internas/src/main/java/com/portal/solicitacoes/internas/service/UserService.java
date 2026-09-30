@@ -3,6 +3,7 @@ package com.portal.solicitacoes.internas.service;
 import com.portal.solicitacoes.internas.dto.UserDTO;
 import com.portal.solicitacoes.internas.dto.UserLoginDTO;
 import com.portal.solicitacoes.internas.entity.User;
+import com.portal.solicitacoes.internas.exception.EmailAlreadyExistsException;
 import com.portal.solicitacoes.internas.repositories.UserRepository;
 import com.portal.solicitacoes.internas.security.TokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,8 +23,8 @@ public class UserService {
 
     public User createUser(UserDTO userDTO){
 
-        if(userRepositories.findByEmail(userDTO.email()).isPresent()){
-            throw new RuntimeException("usuario ja existe com o email cadastrado");
+        if(userRepositories.existsByEmail(userDTO.email())){
+            throw new EmailAlreadyExistsException("Email já cadastrado!");
         }
 
         User newUser = new User();

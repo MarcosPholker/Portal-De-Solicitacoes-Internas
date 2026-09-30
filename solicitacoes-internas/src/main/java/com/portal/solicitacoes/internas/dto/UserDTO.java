@@ -11,6 +11,6 @@ public record UserDTO(
         @Email
         String email,
         @NotBlank(message = "senha não pode ser nula")
-        @Size(min = 8)
+        @Size(min = 8, max = 20)
         String password) {
 }

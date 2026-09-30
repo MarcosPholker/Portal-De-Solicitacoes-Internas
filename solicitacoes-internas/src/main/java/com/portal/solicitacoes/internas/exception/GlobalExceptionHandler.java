@@ -36,4 +36,21 @@ public class GlobalExceptionHandler {
                 .badRequest()
                 .body(response);
     }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleEmailAlreadyExists(
+            EmailAlreadyExistsException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        errors.put("email", ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                400,
+                "Erro de validação",
+                errors
+        );
+
+        return ResponseEntity.badRequest().body(response);
+    }
 }

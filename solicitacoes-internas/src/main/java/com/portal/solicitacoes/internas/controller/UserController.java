@@ -5,6 +5,7 @@ import com.portal.solicitacoes.internas.dto.UserLoginDTO;
 import com.portal.solicitacoes.internas.entity.User;
 import com.portal.solicitacoes.internas.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<User> createUser(@RequestBody @Valid UserDTO userDTO){
-        return ResponseEntity.ok(userService.createUser(userDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDTO));
     }
 
     @PostMapping("/login")
