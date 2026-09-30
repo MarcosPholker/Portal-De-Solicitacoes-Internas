@@ -1,6 +1,6 @@
 package com.portal.solicitacoes.internas.controller;
 
-import com.portal.solicitacoes.internas.dto.UserDTO;
+import com.portal.solicitacoes.internas.dto.UserCreateDTO;
 import com.portal.solicitacoes.internas.dto.UserLoginDTO;
 import com.portal.solicitacoes.internas.entity.User;
 import com.portal.solicitacoes.internas.service.UserService;
@@ -21,8 +21,9 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> createUser(@RequestBody @Valid UserDTO userDTO){
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDTO));
+    public ResponseEntity<Void> createUser(@RequestBody @Valid UserCreateDTO userCreateDTO){
+        userService.createUser(userCreateDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/login")

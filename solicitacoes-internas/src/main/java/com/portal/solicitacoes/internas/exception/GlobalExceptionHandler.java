@@ -53,4 +53,45 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(response);
     }
+
+    @ExceptionHandler(UserNotLoggedInException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotLoggedIn(UserNotLoggedInException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        errors.put("email", ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                400,
+                "Erro de validação",
+                errors
+        );
+
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex){
+        Map<String, String> erros = new HashMap<>();
+        erros.put("email", ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                400,
+                "não encontrado",
+                erros
+        );
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    public ResponseEntity<ErrorResponse> handleNotFoundRequestException(NotFoundRequestException ex){
+        Map<String, String> erros = new HashMap<>();
+        erros.put("email", ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                400,
+                "não encontrado",
+                erros
+        );
+
+        return ResponseEntity.badRequest().body(response);
+    }
 }

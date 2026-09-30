@@ -1,6 +1,6 @@
 package com.portal.solicitacoes.internas.enuns;
 
-public enum RequestCategory {
+public enum InternalRequestCategory {
     TI,
     RH,
     SALES,

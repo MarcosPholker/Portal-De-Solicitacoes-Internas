@@ -1,6 +1,6 @@
 package com.portal.solicitacoes.internas.service;
 
-import com.portal.solicitacoes.internas.dto.UserDTO;
+import com.portal.solicitacoes.internas.dto.UserCreateDTO;
 import com.portal.solicitacoes.internas.dto.UserLoginDTO;
 import com.portal.solicitacoes.internas.entity.User;
 import com.portal.solicitacoes.internas.exception.EmailAlreadyExistsException;
@@ -21,16 +21,16 @@ public class UserService {
         this.tokenService = tokenService;
     }
 
-    public User createUser(UserDTO userDTO){
+    public User createUser(UserCreateDTO userCreateDTO){
 
-        if(userRepositories.existsByEmail(userDTO.email())){
+        if(userRepositories.existsByEmail(userCreateDTO.email())){
             throw new EmailAlreadyExistsException("Email já cadastrado!");
         }
 
         User newUser = new User();
-        newUser.setEmail(userDTO.email());
-        newUser.setUsername(userDTO.username());
-        newUser.setPassword(passwordEncoder.encode(userDTO.password()));
+        newUser.setEmail(userCreateDTO.email());
+        newUser.setUsername(userCreateDTO.username());
+        newUser.setPassword(passwordEncoder.encode(userCreateDTO.password()));
 
         return userRepositories.save(newUser);
     }
