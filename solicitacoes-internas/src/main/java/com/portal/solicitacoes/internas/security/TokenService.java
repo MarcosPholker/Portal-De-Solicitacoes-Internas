@@ -21,14 +21,11 @@ public class TokenService {
     private String secret;
 
     public String createToken(User user) {
-
         return createToken(
                 user.getId(),
                 user.getEmail()
         );
     }
-
-
     public String createToken(UUID id, String email) {
 
         SecretKey key = Keys.hmacShaKeyFor(
@@ -38,6 +35,7 @@ public class TokenService {
         return Jwts.builder()
                 .subject(email)
                 .claim("userId", id)
+                .claim("role", "USER")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 3600000))
                 .signWith(key)

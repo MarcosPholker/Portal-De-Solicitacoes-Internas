@@ -23,7 +23,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public JwtAuthenticationFilter(TokenService tokenService) {
         this.tokenService = tokenService;
     }
-
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -37,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             String token = authHeader.substring(7);
 
-            String email = tokenService.validarToken(token);
+            String email = tokenService.validationToken(token);
             String role = tokenService.getRole(token);
 
             if (email != null && role != null) {
