@@ -4,6 +4,7 @@ import Login from "./pages/Login"
 import Requests from "./pages/Request"
 import CreateRequest from "./pages/CreateRequest"
 import Dashboard from "./pages/Dashboard"
+import Register from "./pages/Register"
 function ProtectedRoute({ children }) {
     return localStorage.getItem("token")
         ? children
@@ -17,6 +18,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/login" element={<Login />} />
+                                <Route path="/register" element={<Register />} />
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/internalrequest" element={<ProtectedRoute><Requests /></ProtectedRoute>} />
                                 <Route path="/internalrequest/mine" element={<ProtectedRoute><Requests mineOnly /></ProtectedRoute>} />

@@ -76,6 +76,40 @@
     font-size: 14px;
 }
 
+.register-prompt {
+    margin: 22px 0 0;
+    color: #667572;
+    font-size: 14px;
+    text-align: center;
+}
+
+.register-prompt a,
+.registration-success a {
+    color: #087e75;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.registration-success {
+    color: #35665a;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.registration-success p {
+    margin: 0 0 18px;
+}
+
+.registration-success .registration-link-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border-radius: 4px;
+    background: #087e75;
+    color: #fff;
+}
+
 @media (max-width: 480px) {
     .login-box {
         padding: 30px 24px;

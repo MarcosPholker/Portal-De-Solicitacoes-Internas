@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import "./Login.css"
 import api from "../services/api"
 
@@ -56,6 +56,7 @@ function Login() {
                         {isSubmitting ? "Entrando..." : "Entrar"}
                     </button>
                 </form>
+                <p className="register-prompt">Ainda não tem uma conta? <Link to="/register">Cadastre-se</Link></p>
             </section>
         </main>
     )
