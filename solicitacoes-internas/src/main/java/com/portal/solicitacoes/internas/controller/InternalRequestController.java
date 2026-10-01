@@ -5,12 +5,11 @@ import com.portal.solicitacoes.internas.dto.InternalRequestDTO;
 import com.portal.solicitacoes.internas.dto.InternalRequestFilterDTO;
 import com.portal.solicitacoes.internas.dto.InternalRequestListDTO;
 import com.portal.solicitacoes.internas.entity.InternalRequest;
-import com.portal.solicitacoes.internas.enuns.InternalRequestCategory;
-import com.portal.solicitacoes.internas.enuns.InternalRequestStatus;
+import com.portal.solicitacoes.internas.enums.InternalRequestCategory;
+import com.portal.solicitacoes.internas.enums.InternalRequestStatus;
 import com.portal.solicitacoes.internas.service.InternalRequestService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,25 +21,25 @@ import java.util.UUID;
 @RequestMapping("/internalrequest")
 public class InternalRequestController {
 
-    private final InternalRequestService irt;
+    private final InternalRequestService internalRequestService;
 
-    public InternalRequestController(InternalRequestService irt) {
-        this.irt = irt;
+    public InternalRequestController(InternalRequestService internalRequestService) {
+        this.internalRequestService = internalRequestService;
     }
 
     @PostMapping("/create")
     public ResponseEntity<InternalRequestDTO> create(@RequestBody InternalRequestDTO internalRequestDTO){
-        return ResponseEntity.status(HttpStatus.CREATED).body(irt.createRequest(internalRequestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(internalRequestService.createRequest(internalRequestDTO));
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<InternalRequest> updateRequest(@PathVariable UUID id, @RequestBody InternalRequestDTO internalRequestDTO){
-        return ResponseEntity.ok(irt.updateRequest(id, internalRequestDTO));
+        return ResponseEntity.ok(internalRequestService.updateRequest(id, internalRequestDTO));
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id){
-        irt.delete(id);
+        internalRequestService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -73,7 +72,7 @@ public class InternalRequestController {
                 );
 
         return ResponseEntity.ok(
-                irt.findAll(filter)
+                internalRequestService.findAll(filter)
         );
 
     }
@@ -81,7 +80,12 @@ public class InternalRequestController {
     public ResponseEntity<DashboardDTO> getDashboard() {
 
         return ResponseEntity.ok(
-                irt.getDashboard()
+                internalRequestService.getDashboard()
         );
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<InternalRequestDTO> findById(@PathVariable UUID id) {
+        return ResponseEntity.ok(internalRequestService.internalRequestDetails(id));
     }
 }

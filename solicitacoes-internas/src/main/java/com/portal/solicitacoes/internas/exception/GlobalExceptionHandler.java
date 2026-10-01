@@ -46,8 +46,8 @@ public class GlobalExceptionHandler {
         errors.put("email", ex.getMessage());
 
         ErrorResponse response = new ErrorResponse(
-                400,
-                "Erro de validação",
+                404,
+                "validation error",
                 errors
         );
 
@@ -62,33 +62,35 @@ public class GlobalExceptionHandler {
         errors.put("email", ex.getMessage());
 
         ErrorResponse response = new ErrorResponse(
-                400,
-                "Erro de validação",
+                404,
+                "validation error",
                 errors
         );
 
         return ResponseEntity.badRequest().body(response);
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex){
         Map<String, String> erros = new HashMap<>();
         erros.put("email", ex.getMessage());
 
         ErrorResponse response = new ErrorResponse(
-                400,
-                "não encontrado",
+                404,
+                "not found",
                 erros
         );
         return ResponseEntity.badRequest().body(response);
     }
 
+    @ExceptionHandler(NotFoundRequestException.class)
     public ResponseEntity<ErrorResponse> handleNotFoundRequestException(NotFoundRequestException ex){
         Map<String, String> erros = new HashMap<>();
         erros.put("email", ex.getMessage());
 
         ErrorResponse response = new ErrorResponse(
-                400,
-                "não encontrado",
+                404,
+                "not found",
                 erros
         );
 

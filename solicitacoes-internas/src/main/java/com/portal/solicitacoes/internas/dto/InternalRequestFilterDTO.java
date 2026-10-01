@@ -1,7 +1,7 @@
 package com.portal.solicitacoes.internas.dto;
 
-import com.portal.solicitacoes.internas.enuns.InternalRequestCategory;
-import com.portal.solicitacoes.internas.enuns.InternalRequestStatus;
+import com.portal.solicitacoes.internas.enums.InternalRequestCategory;
+import com.portal.solicitacoes.internas.enums.InternalRequestStatus;
 
 import java.time.LocalDate;
 

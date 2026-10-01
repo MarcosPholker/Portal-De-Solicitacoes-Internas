@@ -1,7 +1,7 @@
 package com.portal.solicitacoes.internas.entity;
 
-import com.portal.solicitacoes.internas.enuns.InternalRequestCategory;
-import com.portal.solicitacoes.internas.enuns.InternalRequestStatus;
+import com.portal.solicitacoes.internas.enums.InternalRequestCategory;
+import com.portal.solicitacoes.internas.enums.InternalRequestStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,8 +23,10 @@ public class InternalRequest {
     private UUID id;
     private String title;
     private String description;
+    @Enumerated(EnumType.STRING)
     private InternalRequestCategory internalRequestCategory;
     private LocalDateTime creationDate;
+    @Enumerated(EnumType.STRING)
     private InternalRequestStatus internalRequestStatus;
 
     @ManyToOne

@@ -1,6 +1,7 @@
 package com.portal.solicitacoes.internas.config;
+import com.portal.solicitacoes.internas.security.CustomAccessDeniedHandler;
 import com.portal.solicitacoes.internas.security.JwtAuthenticationFilter;
-import com.portal.solicitacoes.internas.service.CustomAuthenticationEntryPoint;
+import com.portal.solicitacoes.internas.security.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,10 +14,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     public final JwtAuthenticationFilter jwtAuthenticationFilter;
     public final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    public final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+    SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, CustomAuthenticationEntryPoint customAuthenticationEntryPoint, CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
 
     @Bean
@@ -24,7 +27,8 @@ public class SecurityConfig {
 
         http
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(customAuthenticationEntryPoint))
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(

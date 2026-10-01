@@ -3,7 +3,7 @@ package com.portal.solicitacoes.internas.service;
 import com.portal.solicitacoes.internas.dto.*;
 import com.portal.solicitacoes.internas.entity.InternalRequest;
 import com.portal.solicitacoes.internas.entity.User;
-import com.portal.solicitacoes.internas.enuns.InternalRequestStatus;
+import com.portal.solicitacoes.internas.enums.InternalRequestStatus;
 import com.portal.solicitacoes.internas.exception.NotFoundRequestException;
 import com.portal.solicitacoes.internas.exception.UserNotFoundException;
 import com.portal.solicitacoes.internas.exception.UserNotLoggedInException;
@@ -12,9 +12,8 @@ import com.portal.solicitacoes.internas.repositories.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
+import org.springframework.security.access.AccessDeniedException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,28 +32,28 @@ public class InternalRequestService {
         String email = authentication.getName();
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("Usuario não encontrado!"));
 
-        InternalRequest iR = new InternalRequest();
-        iR.setTitle(internalRequestDTO.title());
-        iR.setDescription(internalRequestDTO.description());
-        iR.setInternalRequestCategory(internalRequestDTO.internalRequestCategory());
-        iR.setCreationDate(LocalDateTime.now());
-        iR.setInternalRequestStatus(InternalRequestStatus.OPEN);
-        iR.setUser(user);
+        InternalRequest internalRequest = new InternalRequest();
+        internalRequest.setTitle(internalRequestDTO.title());
+        internalRequest.setDescription(internalRequestDTO.description());
+        internalRequest.setInternalRequestCategory(internalRequestDTO.internalRequestCategory());
+        internalRequest.setCreationDate(LocalDateTime.now());
+        internalRequest.setInternalRequestStatus(InternalRequestStatus.OPEN);
+        internalRequest.setUser(user);
 
         UserResponseDTO userResponseDTO = new UserResponseDTO(
-                iR.getUser().getId(),
-                iR.getUser().getUsername()
+                internalRequest.getUser().getId(),
+                internalRequest.getUser().getUsername()
         );
 
-        internalRequestRepository.save(iR);
+        internalRequestRepository.save(internalRequest);
 
         return new InternalRequestDTO(
-                iR.getId(),
-                iR.getTitle(),
-                iR.getDescription(),
-                iR.getInternalRequestCategory(),
-                iR.getCreationDate(),
-                iR.getInternalRequestStatus(),
+                internalRequest.getId(),
+                internalRequest.getTitle(),
+                internalRequest.getDescription(),
+                internalRequest.getInternalRequestCategory(),
+                internalRequest.getCreationDate(),
+                internalRequest.getInternalRequestStatus(),
                 userResponseDTO
         );
     }
@@ -70,8 +69,10 @@ public class InternalRequestService {
         InternalRequest internalRequest = internalRequestRepository.findById(id)
                 .orElseThrow(() -> new NotFoundRequestException("Solicitação não encontrada"));
 
-        if(!internalRequest.getUser().getId().equals(user.getId())){
-            throw new RuntimeException("Você não pode alterar uma solicitação de outro usuário");
+        if (!internalRequest.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException(
+                    "Você não pode alterar uma solicitação de outro usuário"
+            );
         }
 
 
@@ -88,39 +89,34 @@ public class InternalRequestService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotLoggedInException("Usuario não esta authenticado"));
         InternalRequest internalRequest = internalRequestRepository.findById(id).orElseThrow(() -> new NotFoundRequestException("Solicitação nao encontrada"));
 
-        if(!internalRequest.getUser().getId().equals(user.getId())){
-            throw new RuntimeException("Você não pode alterar uma solicitação de outro usuário");
+        if (!internalRequest.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("Você não pode excluir uma solicitação de outro usuário");
         }
 
         internalRequestRepository.deleteById(id);
     }
 
-    public List<InternalRequestListDTO> listAllInternalRequest() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        userRepository.findByEmail(email).orElseThrow(() -> new UserNotLoggedInException("Usuario não esta authenticado"));
 
-        List<InternalRequest> ir = internalRequestRepository.findAll();
-        List<InternalRequestListDTO> irlDTO = new ArrayList<>();
-        for (InternalRequest internalRequest : ir) {
-            irlDTO.add(new InternalRequestListDTO(internalRequest.getId()
-                    , internalRequest.getTitle()
-                    , internalRequest.getInternalRequestCategory()
-                    , internalRequest.getUser().getUsername()
-                    , internalRequest.getCreationDate()
-                    , internalRequest.getInternalRequestStatus()));
+    public InternalRequest changeStatus(UUID id, InternalRequestStatus status) {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UserNotLoggedInException("Usuario não está autenticado"));
+
+        InternalRequest internalRequest = internalRequestRepository.findById(id).orElseThrow(() -> new NotFoundRequestException("Solicitação não encontrada"));
+
+        if (!internalRequest.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException(
+                    "Você não pode alterar o status de uma solicitação de outro usuário"
+            );
         }
-        return irlDTO;
-    }
 
-    public InternalRequest changeStatus(UUID id, InternalRequestStatus status){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        userRepository.findByEmail(email).orElseThrow(() -> new UserNotLoggedInException("Usuario não esta authenticado"));
+        internalRequest.setInternalRequestStatus(status);
 
-        InternalRequest ir = internalRequestRepository.findById(id).orElseThrow(() -> new NotFoundRequestException("solicitação não encontrada"));
-        ir.setInternalRequestStatus(status);
-        return internalRequestRepository.save(ir);
+        return internalRequestRepository.save(internalRequest);
     }
 
     public InternalRequestDTO internalRequestDetails(UUID id){
@@ -130,7 +126,7 @@ public class InternalRequestService {
 
         InternalRequest ir = internalRequestRepository.findById(id).orElseThrow(() -> new NotFoundRequestException("solicitação não encontrada"));
 
-        UserResponseDTO urDTO = new UserResponseDTO(ir.getUser().getId(),ir.getUser().getUsername());
+        UserResponseDTO userResponseDTO = new UserResponseDTO(ir.getUser().getId(),ir.getUser().getUsername());
 
         return new InternalRequestDTO(ir.getId()
                 , ir.getTitle()
@@ -138,7 +134,7 @@ public class InternalRequestService {
                 , ir.getInternalRequestCategory()
                 , ir.getCreationDate()
                 , ir.getInternalRequestStatus()
-                , urDTO);
+                , userResponseDTO);
     }
 
     public List<InternalRequestListDTO> findAll(

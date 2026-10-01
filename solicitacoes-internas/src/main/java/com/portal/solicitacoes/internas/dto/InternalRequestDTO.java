@@ -1,7 +1,7 @@
 package com.portal.solicitacoes.internas.dto;
 
-import com.portal.solicitacoes.internas.enuns.InternalRequestCategory;
-import com.portal.solicitacoes.internas.enuns.InternalRequestStatus;
+import com.portal.solicitacoes.internas.enums.InternalRequestCategory;
+import com.portal.solicitacoes.internas.enums.InternalRequestStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,14 +21,13 @@ public record InternalRequestDTO(
         @Size(max = 500, message = "descrição deve ter no máximo 500 caracteres")
         String description,
 
-        @NotBlank(message = "A categoria não pode estar vazia!")
         @NotNull(message = "categoria da solicitação não pode ser nula!")
         InternalRequestCategory internalRequestCategory,
 
         LocalDateTime creationDate,
 
         InternalRequestStatus internalRequestStatus,
-        
+
         UserResponseDTO userResponseDTO
 
 ) {

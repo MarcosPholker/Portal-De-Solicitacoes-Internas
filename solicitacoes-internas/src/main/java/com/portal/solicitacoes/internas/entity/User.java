@@ -1,9 +1,6 @@
 package com.portal.solicitacoes.internas.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +18,11 @@ public class User {
     @Id
     @GeneratedValue
     private UUID id;
+    @Column(nullable = false, unique = true)
     private String email;
+    @Column(nullable = false)
     private String username;
+    @Column(nullable = false)
     private String password;
 
 }

@@ -1,4 +1,4 @@
-package com.portal.solicitacoes.internas.enuns;
+package com.portal.solicitacoes.internas.enums;
 
 public enum InternalRequestStatus {
     OPEN,

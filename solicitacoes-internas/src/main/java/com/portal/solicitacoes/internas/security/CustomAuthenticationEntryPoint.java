@@ -1,4 +1,4 @@
-package com.portal.solicitacoes.internas.service;
+package com.portal.solicitacoes.internas.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
