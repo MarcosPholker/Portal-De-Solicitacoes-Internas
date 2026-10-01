@@ -253,14 +253,21 @@ A configuração de Docker será documentada nesta seção após a finalização
 
 ## Melhorias futuras
 
-- Testes automatizados de maior cobertura
-- Documentação da API com OpenAPI/Swagger
-- Controle de permissões mais granular
+As funcionalidades abaixo não fazem parte do escopo obrigatório do desafio, mas foram identificadas como possíveis evoluções do sistema:
+
+- Cadastro de novos usuários pela interface
+- Gerenciamento de usuários
+- Recuperação e alteração de senha
+- Controle de permissões por perfil
 - Paginação da listagem de solicitações
+- Testes automatizados com maior cobertura
+- Documentação da API com OpenAPI/Swagger
 - Logs estruturados
 - Pipeline de CI/CD
 - Containerização completa da aplicação
 - Deploy em ambiente cloud
+
+O cadastro de usuários pela interface, por exemplo, não foi implementado por não fazer parte dos requisitos solicitados. Para o cenário atual, os usuários de teste podem ser cadastrados diretamente no banco de dados.
 
 ## Objetivo do projeto
 
