@@ -4,7 +4,6 @@ import com.portal.solicitacoes.internas.dto.DashboardDTO;
 import com.portal.solicitacoes.internas.dto.InternalRequestDTO;
 import com.portal.solicitacoes.internas.dto.InternalRequestFilterDTO;
 import com.portal.solicitacoes.internas.dto.InternalRequestListDTO;
-import com.portal.solicitacoes.internas.entity.InternalRequest;
 import com.portal.solicitacoes.internas.enums.InternalRequestCategory;
 import com.portal.solicitacoes.internas.enums.InternalRequestStatus;
 import com.portal.solicitacoes.internas.service.InternalRequestService;
@@ -33,7 +32,7 @@ public class InternalRequestController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<InternalRequest> updateRequest(@PathVariable UUID id, @RequestBody InternalRequestDTO internalRequestDTO){
+    public ResponseEntity<InternalRequestDTO> updateRequest(@PathVariable UUID id, @RequestBody InternalRequestDTO internalRequestDTO){
         return ResponseEntity.ok(internalRequestService.updateRequest(id, internalRequestDTO));
     }
 

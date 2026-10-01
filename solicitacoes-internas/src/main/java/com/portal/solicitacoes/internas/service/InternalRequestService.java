@@ -58,7 +58,7 @@ public class InternalRequestService {
         );
     }
 
-    public InternalRequest updateRequest(UUID id, InternalRequestDTO internalRequestDTO) {
+    public InternalRequestDTO updateRequest(UUID id, InternalRequestDTO internalRequestDTO) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -80,7 +80,8 @@ public class InternalRequestService {
         internalRequest.setDescription(internalRequestDTO.description());
         internalRequest.setInternalRequestCategory(internalRequestDTO.internalRequestCategory());
 
-        return internalRequestRepository.save(internalRequest);
+        internalRequestRepository.save(internalRequest);
+        return internalRequestDTO;
     }
 
     public void delete(UUID id){
