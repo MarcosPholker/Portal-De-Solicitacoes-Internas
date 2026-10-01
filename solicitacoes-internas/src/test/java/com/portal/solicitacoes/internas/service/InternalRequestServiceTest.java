@@ -586,6 +586,42 @@ class InternalRequestServiceTest {
     }
 
     @Test
+    void deveListarSomenteSolicitacoesDoUsuarioAutenticado() {
+        User loggedUser = new User();
+        loggedUser.setId(UUID.randomUUID());
+        loggedUser.setEmail("marcos@email.com");
+        loggedUser.setUsername("Marcos");
+
+        InternalRequest ownRequest = new InternalRequest();
+        ownRequest.setId(UUID.randomUUID());
+        ownRequest.setTitle("Meu pedido");
+        ownRequest.setInternalRequestCategory(InternalRequestCategory.TI);
+        ownRequest.setCreationDate(LocalDateTime.now());
+        ownRequest.setInternalRequestStatus(InternalRequestStatus.OPEN);
+        ownRequest.setUser(loggedUser);
+
+        when(authentication.getName()).thenReturn("marcos@email.com");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        when(userRepository.findByEmail("marcos@email.com"))
+                .thenReturn(Optional.of(loggedUser));
+        when(internalRequestRepository.findAllByUser(loggedUser))
+                .thenReturn(List.of(ownRequest));
+
+        InternalRequestFilterDTO filter = new InternalRequestFilterDTO(
+                null, null, null, null, null
+        );
+
+        List<InternalRequestListDTO> result =
+                internalRequestService.findMyRequests(filter);
+
+        assertEquals(1, result.size());
+        assertEquals("Meu pedido", result.get(0).title());
+        assertEquals("Marcos", result.get(0).username());
+        verify(internalRequestRepository).findAllByUser(loggedUser);
+        verify(internalRequestRepository, never()).findAll();
+    }
+
+    @Test
     void deveFiltrarSolicitacoesPorTitulo() {
 
         User user = new User();

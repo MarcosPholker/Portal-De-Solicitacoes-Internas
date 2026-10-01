@@ -39,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String email = tokenService.validationToken(token);
             String role = tokenService.getRole(token);
 
+
             if (email != null && role != null) {
 
                 SimpleGrantedAuthority authority =
@@ -54,6 +55,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder
                         .getContext()
                         .setAuthentication(authentication);
+
+                System.out.println("AUTHENTICATED: "
+                        + SecurityContextHolder.getContext().getAuthentication());
+
+                System.out.println("AUTHORITIES: "
+                        + SecurityContextHolder.getContext()
+                        .getAuthentication()
+                        .getAuthorities());
             }
         }
 

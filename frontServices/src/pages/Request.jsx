@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import api from "../services/api"
 import "./Request.css"
 
-function Request() {
+function Request({ mineOnly = false }) {
     const [requests, setRequests] = useState([])
     const [filters, setFilters] = useState({ title: "", category: "", status: "" })
     const [appliedFilters, setAppliedFilters] = useState({ title: "", category: "", status: "" })
@@ -20,13 +20,13 @@ function Request() {
                 const params = Object.fromEntries(
                     Object.entries(appliedFilters).filter(([, value]) => value)
                 )
-                const response = await api.get("/internalrequest", { params })
+                const endpoint = mineOnly ? "/internalrequest/mine" : "/internalrequest"
+                const response = await api.get(endpoint, { params })
                 setRequests(response.data)
             } catch (error) {
                 if (error.response?.status === 401) {
-                    localStorage.removeItem("token")
-                    navigate("/login", { replace: true })
-                    return
+                    console.error("Erro 401:", error.response);
+                    return;
                 }
                 if (error.response?.status === 403) {
                     setErrorMessage("Você não tem permissão para visualizar estas solicitações.")
@@ -39,7 +39,7 @@ function Request() {
         }
 
         fetchRequests()
-    }, [appliedFilters, navigate])
+    }, [appliedFilters, mineOnly, navigate])
 
     function handleFilterChange(event) {
         setFilters({ ...filters, [event.target.name]: event.target.value })
@@ -85,7 +85,10 @@ function Request() {
     return (
         <div className="requests-container">
             <header className="topbar">
-                <Link className="brand" to="/internalrequest">SI<span>/</span></Link>
+                <Link className="brand" to="/dashboard">SI<span>/</span></Link>
+                <Link className="topbar-link" to="/dashboard">Dashboard</Link>
+                <Link className={`topbar-link ${!mineOnly ? "topbar-link-active" : ""}`} to="/internalrequest">Todas</Link>
+                <Link className={`topbar-link ${mineOnly ? "topbar-link-active" : ""}`} to="/internalrequest/mine">Meus pedidos</Link>
                 <span className="topbar-caption">Portal interno</span>
                 <button className="text-button" type="button" onClick={handleLogout}>Sair</button>
             </header>
@@ -93,8 +96,8 @@ function Request() {
                 <div className="page-heading">
                     <div>
                         <p className="eyebrow">EQUIPE · SOLICITAÇÕES</p>
-                        <h1>Pedidos internos</h1>
-                        <p className="page-subtitle">Acompanhe e organize as solicitações da equipe.</p>
+                        <h1>{mineOnly ? "Meus pedidos" : "Pedidos internos"}</h1>
+                        <p className="page-subtitle">{mineOnly ? "Acompanhe as solicitações que você registrou." : "Acompanhe e organize as solicitações da equipe."}</p>
                     </div>
                     <Link className="primary-link" to="/internalrequest/create">+ Nova solicitação</Link>
                 </div>
@@ -129,7 +132,7 @@ function Request() {
 
                 {errorMessage && <p className="form-error page-error" role="alert">{errorMessage}</p>}
                 <div className="list-heading">
-                    <h2>Solicitações</h2>
+                    <h2>{mineOnly ? "Seus pedidos" : "Solicitações"}</h2>
                     {!isLoading && <span>{requests.length} {requests.length === 1 ? "pedido" : "pedidos"}</span>}
                 </div>
 
@@ -144,7 +147,14 @@ function Request() {
                     <div className="request-table-wrap">
                         <table className="request-table">
                             <thead>
-                                <tr><th>Solicitação</th><th>Categoria</th><th>Solicitante</th><th>Data</th><th>Status</th><th><span className="sr-only">Ações</span></th></tr>
+                                <tr>
+                                    <th>Solicitação</th>
+                                    <th>Categoria</th>
+                                    <th>Solicitante</th>
+                                    <th>Data</th>
+                                    <th>Status</th>
+                                    {mineOnly && <th><span className="sr-only">Ações</span></th>}
+                                </tr>
                             </thead>
                             <tbody>
                                 {requests.map((request) => (
@@ -154,12 +164,14 @@ function Request() {
                                         <td>{request.username || "-"}</td>
                                         <td>{request.creationDate ? new Date(request.creationDate).toLocaleDateString("pt-BR") : "-"}</td>
                                         <td><span className={`status-badge status-${request.internalRequestStatus?.toLowerCase()}`}>{statusLabels[request.internalRequestStatus] || request.internalRequestStatus}</span></td>
-                                        <td className="row-actions">
-                                            <Link to={`/internalrequest/${request.id}/edit`} aria-label={`Editar ${request.title}`}>Editar</Link>
-                                            <button type="button" onClick={() => handleDelete(request.id)} disabled={isDeleting === request.id} aria-label={`Excluir ${request.title}`}>
-                                                {isDeleting === request.id ? "Excluindo..." : "Excluir"}
-                                            </button>
-                                        </td>
+                                        {mineOnly && (
+                                            <td className="row-actions">
+                                                <Link to={`/internalrequest/${request.id}/edit`} aria-label={`Editar ${request.title}`}>Editar</Link>
+                                                <button type="button" onClick={() => handleDelete(request.id)} disabled={isDeleting === request.id} aria-label={`Excluir ${request.title}`}>
+                                                    {isDeleting === request.id ? "Excluindo..." : "Excluir"}
+                                                </button>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>

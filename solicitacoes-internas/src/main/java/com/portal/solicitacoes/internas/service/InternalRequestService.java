@@ -141,9 +141,22 @@ public class InternalRequestService {
     public List<InternalRequestListDTO> findAll(
             InternalRequestFilterDTO filter) {
 
-        List<InternalRequest> requests =
-                internalRequestRepository.findAll();
+        return filterRequests(internalRequestRepository.findAll(), filter);
+    }
 
+    public List<InternalRequestListDTO> findMyRequests(
+            InternalRequestFilterDTO filter) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotLoggedInException("Usuario não esta authenticado"));
+
+        return filterRequests(internalRequestRepository.findAllByUser(user), filter);
+    }
+
+    private List<InternalRequestListDTO> filterRequests(
+            List<InternalRequest> requests,
+            InternalRequestFilterDTO filter) {
         return requests.stream()
                 .filter(request ->
                         filter.title() == null ||
@@ -153,13 +166,11 @@ public class InternalRequestService {
                 )
                 .filter(request ->
                         filter.category() == null ||
-                                request.getInternalRequestCategory()
-                                        .equals(filter.category())
+                                filter.category().equals(request.getInternalRequestCategory())
                 )
                 .filter(request ->
                         filter.status() == null ||
-                                request.getInternalRequestStatus()
-                                        .equals(filter.status())
+                                filter.status().equals(request.getInternalRequestStatus())
                 )
                 .filter(request ->
                         filter.startDate() == null ||
@@ -209,6 +220,34 @@ public class InternalRequestService {
                 inProgress,
                 completed
         );
+    }
+
+    public List<InternalRequestListDTO> findMyRequests() {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UserNotLoggedInException(
+                                "Usuário não está autenticado"
+                        ));
+
+        List<InternalRequest> requests =
+                internalRequestRepository.findAllByUser(user);
+
+        return requests.stream()
+                .map(request -> new InternalRequestListDTO(
+                        request.getId(),
+                        request.getTitle(),
+                        request.getInternalRequestCategory(),
+                        request.getUser().getUsername(),
+                        request.getCreationDate(),
+                        request.getInternalRequestStatus()
+                ))
+                .toList();
     }
 
 }

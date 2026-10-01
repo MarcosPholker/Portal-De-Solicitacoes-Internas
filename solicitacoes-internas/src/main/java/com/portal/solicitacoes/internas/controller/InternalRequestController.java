@@ -75,6 +75,28 @@ public class InternalRequestController {
         );
 
     }
+
+    @GetMapping("/mine")
+    public ResponseEntity<List<InternalRequestListDTO>> findMyRequests(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) InternalRequestCategory category,
+            @RequestParam(required = false) InternalRequestStatus status,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        InternalRequestFilterDTO filter = new InternalRequestFilterDTO(
+                title,
+                category,
+                status,
+                startDate,
+                endDate
+        );
+
+        return ResponseEntity.ok(internalRequestService.findMyRequests(filter));
+    }
+
     @GetMapping("/dashboard")
     public ResponseEntity<DashboardDTO> getDashboard() {
 

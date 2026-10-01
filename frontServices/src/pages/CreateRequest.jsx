@@ -15,7 +15,7 @@ function CreateRequest() {
 
     useEffect(() => {
         if (!id) return
-        api.get(`/internalrequest/${id}`)
+        api.get(`/internalrequest/update/${id}`)
             .then(({ data }) => {
                 setTitle(data.title || "")
                 setCategory(data.internalRequestCategory || "")
@@ -48,7 +48,10 @@ function CreateRequest() {
     return (
         <div className="requests-container">
             <header className="topbar">
-                <Link className="brand" to="/internalrequest">SI<span>/</span></Link>
+                <Link className="brand" to="/dashboard">SI<span>/</span></Link>
+                <Link className="topbar-link" to="/dashboard">Dashboard</Link>
+                <Link className="topbar-link" to="/internalrequest">Todas</Link>
+                <Link className="topbar-link" to="/internalrequest/mine">Meus pedidos</Link>
                 <span className="topbar-caption">Portal interno</span>
                 <Link className="text-button" to="/internalrequest">Voltar à lista</Link>
             </header>

@@ -18,7 +18,7 @@ function Login() {
         try {
             const response = await api.post("/auth/login", { email, password })
             localStorage.setItem("token", response.data)
-            navigate("/internalrequest")
+            navigate("/dashboard")
         } catch (error) {
             setErrorMessage(error.response?.data?.message || "Não foi possível entrar. Confira seu email e senha.")
         } finally {

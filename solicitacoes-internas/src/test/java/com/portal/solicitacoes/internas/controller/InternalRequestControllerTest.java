@@ -1,6 +1,7 @@
 package com.portal.solicitacoes.internas.controller;
 
 import com.portal.solicitacoes.internas.dto.InternalRequestDTO;
+import com.portal.solicitacoes.internas.dto.InternalRequestListDTO;
 import com.portal.solicitacoes.internas.dto.UserResponseDTO;
 import com.portal.solicitacoes.internas.enums.InternalRequestCategory;
 import com.portal.solicitacoes.internas.enums.InternalRequestStatus;
@@ -19,11 +20,13 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -88,5 +91,26 @@ class InternalRequestControllerTest {
 
         verify(internalRequestService)
                 .createRequest(any(InternalRequestDTO.class));
+    }
+
+    @Test
+    void deveListarMeusPedidos() throws Exception {
+        InternalRequestListDTO request = new InternalRequestListDTO(
+                UUID.randomUUID(),
+                "Meu pedido",
+                InternalRequestCategory.TI,
+                "Marcos",
+                LocalDateTime.now(),
+                InternalRequestStatus.OPEN
+        );
+        when(internalRequestService.findMyRequests(any()))
+                .thenReturn(List.of(request));
+
+        mockMvc.perform(get("/internalrequest/mine"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].title").value("Meu pedido"))
+                .andExpect(jsonPath("$[0].username").value("Marcos"));
+
+        verify(internalRequestService).findMyRequests(any());
     }
 }

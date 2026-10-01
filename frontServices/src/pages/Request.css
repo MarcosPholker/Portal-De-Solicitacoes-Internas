@@ -1,5 +1,6 @@
 .requests-container {
     min-height: 100vh;
+    overflow-x: hidden;
     background-color: #f4f7f5;
 }
 
@@ -327,6 +328,22 @@
 }
 
 @media (max-width: 760px) {
+    .topbar {
+        height: auto;
+        min-height: 58px;
+        flex-wrap: wrap;
+        gap: 8px 4px;
+        padding: 10px 24px;
+    }
+
+    .topbar-caption {
+        display: none;
+    }
+
+    .topbar-link {
+        margin-left: 10px;
+    }
+
     .requests-main,
     .form-main {
         width: min(100% - 32px, 1160px);
@@ -349,7 +366,7 @@
 
 @media (max-width: 480px) {
     .topbar {
-        height: 58px;
+        min-height: 58px;
         padding: 0 16px;
     }
 
