@@ -23,7 +23,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.getWriter().write("""
             {
                 "status": 403,
-                "message": "Acesso negado"
+                "message": "Forbidden"
             }
             """);
     }

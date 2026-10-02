@@ -25,7 +25,7 @@ public class CustomAuthenticationEntryPoint
         response.getWriter().write("""
             {
                 "status": 401,
-                "message": "Usuário não autenticado"
+                "message": "Unauthorized"
             }
             """);
     }

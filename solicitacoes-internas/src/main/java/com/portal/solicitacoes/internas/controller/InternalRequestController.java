@@ -99,7 +99,6 @@ public class InternalRequestController {
 
     @GetMapping("/dashboard")
     public ResponseEntity<DashboardDTO> getDashboard() {
-
         return ResponseEntity.ok(
                 internalRequestService.getDashboard()
         );

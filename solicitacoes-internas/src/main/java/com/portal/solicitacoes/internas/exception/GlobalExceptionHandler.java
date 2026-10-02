@@ -46,8 +46,8 @@ public class GlobalExceptionHandler {
         errors.put("email", ex.getMessage());
 
         ErrorResponse response = new ErrorResponse(
-                404,
-                "validation error",
+                409,
+                "Conflict",
                 errors
         );
 
@@ -62,8 +62,8 @@ public class GlobalExceptionHandler {
         errors.put("email", ex.getMessage());
 
         ErrorResponse response = new ErrorResponse(
-                404,
-                "validation error",
+                401,
+                "Unauthorized",
                 errors
         );
 
