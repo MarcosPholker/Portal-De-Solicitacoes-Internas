@@ -255,7 +255,6 @@ A configuração de Docker será documentada nesta seção após a finalização
 
 As funcionalidades abaixo não fazem parte do escopo obrigatório do desafio, mas foram identificadas como possíveis evoluções do sistema:
 
-- Cadastro de novos usuários pela interface
 - Gerenciamento de usuários
 - Recuperação e alteração de senha
 - Controle de permissões por perfil
