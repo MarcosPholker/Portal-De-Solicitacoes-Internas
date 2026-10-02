@@ -125,7 +125,7 @@ O projeto possui o diretório `database/` destinado aos scripts relacionados ao 
 
 ## Pré-requisitos
 
-Para executar o projeto localmente, é necessário ter instalado:
+Para executar o projeto manualmente, é necessário ter instalado:
 
 - Java 21
 - Maven
@@ -134,6 +134,15 @@ Para executar o projeto localmente, é necessário ter instalado:
 - PostgreSQL
 
 Também é necessário configurar as variáveis de ambiente utilizadas pelo backend.
+
+### Execução com Docker
+
+Para executar a aplicação utilizando Docker, é necessário ter instalado:
+
+- Docker
+- Docker Compose
+
+Nesse modo, o PostgreSQL e o backend são executados em containers. O frontend também pode ser executado em container através da imagem configurada no `docker-compose.yml`.
 
 ## Executando o Backend
 
@@ -247,9 +256,96 @@ A aplicação possui tratamento de exceções para situações como:
 
 ## Docker
 
-A aplicação será disponibilizada também através de Docker Compose, permitindo executar os principais serviços do projeto de forma integrada.
+O projeto possui configuração com Docker Compose para facilitar a execução do ambiente completo.
 
-A configuração de Docker será documentada nesta seção após a finalização dos arquivos de containerização.
+O `docker-compose.yml` configura os seguintes serviços:
+
+- **PostgreSQL**: banco de dados da aplicação
+- **Backend**: API Spring Boot
+- **Frontend**: aplicação React servida através de container
+
+### Configuração das variáveis de ambiente
+
+Antes de iniciar os containers, crie o arquivo `.env` na raiz do projeto.
+
+Você pode utilizar o `.env.exemple` como referência:
+
+```env
+DB_USERNAME=postgres
+DB_PASSWORD=sua_senha_aqui
+JWT_SECRET=sua_chave_jwt_aqui
+```
+
+> O arquivo `.env` não deve ser versionado no GitHub. Utilize o `.env.exemple` apenas como modelo para configuração do ambiente.
+
+### Construindo a imagem do frontend
+
+O `docker-compose.yml` utiliza a imagem `portal-solicitacoes-frontend` para o frontend. Caso essa imagem ainda não exista localmente, construa-a a partir do diretório do frontend:
+
+```bash
+docker build -t portal-solicitacoes-frontend ./frontServices
+```
+
+### Subindo a aplicação
+
+Na raiz do projeto, execute:
+
+```bash
+docker compose up --build -d
+```
+
+O parâmetro `--build` garante que a imagem do backend seja reconstruída quando necessário.
+
+Para verificar o estado dos containers:
+
+```bash
+docker compose ps
+```
+
+Para acompanhar os logs do backend:
+
+```bash
+docker compose logs -f backend
+```
+
+### Acessando a aplicação
+
+Com os containers em execução:
+
+- **Frontend:** `http://localhost:3000`
+- **Backend:** `http://localhost:8080`
+- **PostgreSQL:** `localhost:5432`
+
+O banco utilizado pelo projeto é `portal_solicitacoes`.
+
+### Parando os containers
+
+Para parar os serviços:
+
+```bash
+docker compose down
+```
+
+O volume `postgres_data` é mantido ao utilizar apenas `docker compose down`, preservando os dados do banco.
+
+Para remover também o volume e apagar os dados persistidos do PostgreSQL:
+
+```bash
+docker compose down -v
+```
+
+> Utilize `docker compose down -v` somente quando realmente quiser recriar o banco do zero.
+
+### Reconstruindo após alterações
+
+Quando houver alterações no backend ou nas imagens Docker, utilize:
+
+```bash
+docker compose down
+docker compose up --build -d
+```
+
+Assim, os containers são recriados utilizando as versões atualizadas das imagens.
 
 ## Melhorias futuras
 
@@ -263,14 +359,13 @@ As funcionalidades abaixo não fazem parte do escopo obrigatório do desafio, ma
 - Documentação da API com OpenAPI/Swagger
 - Logs estruturados
 - Pipeline de CI/CD
-- Containerização completa da aplicação
 - Deploy em ambiente cloud
 
 O cadastro de usuários pela interface, por exemplo, não foi implementado por não fazer parte dos requisitos solicitados. Para o cenário atual, os usuários de teste podem ser cadastrados diretamente no banco de dados.
 
 ## Objetivo do projeto
 
-O projeto foi desenvolvido com foco em demonstrar conhecimentos de desenvolvimento full stack, incluindo:
+O projeto foi desenvolvido com foco em demonstrar conhecimentos de desenvolvimento full stack e containerização, incluindo:
 
 - Desenvolvimento de APIs REST
 - Desenvolvimento de interfaces web
