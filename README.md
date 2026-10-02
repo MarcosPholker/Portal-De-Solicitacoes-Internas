@@ -9,6 +9,7 @@ A aplicação permite que usuários autenticados registrem e acompanhem solicita
 - Autenticação de usuários
 - Login e logout
 - Autenticação baseada em JWT
+- Cadastro de usuários
 - Cadastro de solicitações internas
 - Edição de solicitações
 - Exclusão de solicitações
@@ -360,8 +361,6 @@ As funcionalidades abaixo não fazem parte do escopo obrigatório do desafio, ma
 - Logs estruturados
 - Pipeline de CI/CD
 - Deploy em ambiente cloud
-
-O cadastro de usuários pela interface, por exemplo, não foi implementado por não fazer parte dos requisitos solicitados. Para o cenário atual, os usuários de teste podem ser cadastrados diretamente no banco de dados.
 
 ## Objetivo do projeto
 
