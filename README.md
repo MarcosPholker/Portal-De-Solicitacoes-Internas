@@ -62,13 +62,12 @@ A aplicação permite que usuários autenticados registrem e acompanhem solicita
 
 ## Arquitetura
 
-O projeto está dividido em três partes principais:
+O projeto está dividido em duas partes principais:
 
 ```text
 Portal-De-Solicitacoes-Internas/
 ├── solicitacoes-internas/    # Backend - Spring Boot
-├── frontServices/            # Frontend - React
-└── database/                 # Scripts do banco de dados
+└── frontServices/            # Frontend - React
 ```
 
 O frontend realiza requisições HTTP para a API desenvolvida em Spring Boot.
@@ -114,38 +113,127 @@ DB_PASSWORD
 JWT_SECRET
 ```
 
-Exemplo:
-
-```text
-DB_USERNAME=postgres
-DB_PASSWORD=sua_senha
-JWT_SECRET=sua_chave_secreta
-```
-
-O projeto possui o diretório `database/` destinado aos scripts relacionados ao banco de dados.
+O banco utilizado pelo projeto é `portal_solicitacoes`.
 
 ## Pré-requisitos
 
-Para executar o projeto manualmente, é necessário ter instalado:
+Para executar o projeto utilizando Docker, é necessário ter instalado:
 
-- Java 21
-- Maven
-- Node.js
-- npm
-- PostgreSQL
-
-Também é necessário configurar as variáveis de ambiente utilizadas pelo backend.
-
-### Execução com Docker
-
-Para executar a aplicação utilizando Docker, é necessário ter instalado:
-
+- Git
 - Docker
 - Docker Compose
 
-Nesse modo, o PostgreSQL e o backend são executados em containers. O frontend também pode ser executado em container através da imagem configurada no `docker-compose.yml`.
+O ambiente Docker disponibiliza o PostgreSQL, o backend e o frontend da aplicação.
 
-## Executando o Backend
+## Executando com Docker
+
+### 1. Clonar o projeto
+
+```bash
+git clone https://github.com/MarcosPholker/Portal-De-Solicitacoes-Internas.git
+cd Portal-De-Solicitacoes-Internas
+```
+
+### 2. Configurar as variáveis de ambiente
+
+Crie o arquivo `.env` na raiz do projeto a partir do arquivo `.env.example`:
+
+Windows:
+
+```powershell
+copy .env.example .env
+```
+
+Linux/macOS:
+
+```bash
+cp .env.example .env
+```
+
+O `.env.example` contém valores de exemplo para permitir a execução do projeto. Em um ambiente real, utilize credenciais e uma chave JWT próprias.
+
+Exemplo:
+
+```env
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+JWT_SECRET=dev_example_secret_change_this_key_9f7K2mQ8xL4pN6vR3tY5wE1sA0cD8hG7
+```
+
+> O arquivo `.env` não deve ser versionado no GitHub. Utilize o `.env.example` apenas como modelo de configuração.
+
+### 3. Construir a imagem do frontend
+
+O `docker-compose.yml` utiliza a imagem `portal-solicitacoes-frontend` para o frontend. Caso essa imagem ainda não exista localmente, construa-a a partir do diretório do frontend:
+
+```bash
+docker build -t portal-solicitacoes-frontend ./frontServices
+```
+
+### 4. Subir a aplicação
+
+Na raiz do projeto, execute:
+
+```bash
+docker compose up --build -d
+```
+
+O parâmetro `--build` garante que a imagem do backend seja reconstruída quando necessário.
+
+Para verificar o estado dos containers:
+
+```bash
+docker compose ps
+```
+
+Para acompanhar os logs do backend:
+
+```bash
+docker compose logs -f backend
+```
+
+### 5. Acessar a aplicação
+
+Com os containers em execução:
+
+- **Frontend:** http://localhost:3000
+- **Backend:** http://localhost:8080
+- **PostgreSQL:** localhost:5432
+
+### Parando os containers
+
+Para parar os serviços:
+
+```bash
+docker compose down
+```
+
+O volume `postgres_data` é mantido ao utilizar apenas `docker compose down`, preservando os dados do banco.
+
+Para remover também o volume e apagar os dados persistidos do PostgreSQL:
+
+```bash
+docker compose down -v
+```
+
+> Utilize `docker compose down -v` somente quando realmente quiser recriar o banco do zero.
+
+### Reconstruindo após alterações
+
+Quando houver alterações no backend ou nas imagens Docker, utilize:
+
+```bash
+docker compose down
+docker compose up --build -d
+```
+
+Assim, os containers são recriados utilizando as versões atualizadas das imagens.
+
+## Executando manualmente
+
+Também é possível executar o backend e o frontend sem Docker.
+
+### Backend
 
 Entre no diretório do backend:
 
@@ -165,7 +253,7 @@ A API estará disponível em:
 http://localhost:8080
 ```
 
-## Executando o Frontend
+### Frontend
 
 Entre no diretório do frontend:
 
@@ -246,6 +334,8 @@ A aplicação possui tratamento de exceções para situações como:
 - Usuário não autenticado
 - Acesso não autorizado
 - Dados inválidos
+- E-mail já cadastrado
+- Credenciais inválidas
 
 ## Variáveis de ambiente
 
@@ -255,104 +345,10 @@ A aplicação possui tratamento de exceções para situações como:
 | `DB_PASSWORD` | Senha do PostgreSQL |
 | `JWT_SECRET` | Chave utilizada para geração e validação dos tokens JWT |
 
-## Docker
-
-O projeto possui configuração com Docker Compose para facilitar a execução do ambiente completo.
-
-O `docker-compose.yml` configura os seguintes serviços:
-
-- **PostgreSQL**: banco de dados da aplicação
-- **Backend**: API Spring Boot
-- **Frontend**: aplicação React servida através de container
-
-### Configuração das variáveis de ambiente
-
-Antes de iniciar os containers, crie o arquivo `.env` na raiz do projeto.
-
-Você pode utilizar o `.env.exemple` como referência:
-
-```env
-DB_USERNAME=postgres
-DB_PASSWORD=sua_senha_aqui
-JWT_SECRET=sua_chave_jwt_aqui
-```
-
-> O arquivo `.env` não deve ser versionado no GitHub. Utilize o `.env.exemple` apenas como modelo para configuração do ambiente.
-
-### Construindo a imagem do frontend
-
-O `docker-compose.yml` utiliza a imagem `portal-solicitacoes-frontend` para o frontend. Caso essa imagem ainda não exista localmente, construa-a a partir do diretório do frontend:
-
-```bash
-docker build -t portal-solicitacoes-frontend ./frontServices
-```
-
-### Subindo a aplicação
-
-Na raiz do projeto, execute:
-
-```bash
-docker compose up --build -d
-```
-
-O parâmetro `--build` garante que a imagem do backend seja reconstruída quando necessário.
-
-Para verificar o estado dos containers:
-
-```bash
-docker compose ps
-```
-
-Para acompanhar os logs do backend:
-
-```bash
-docker compose logs -f backend
-```
-
-### Acessando a aplicação
-
-Com os containers em execução:
-
-- **Frontend:** `http://localhost:3000`
-- **Backend:** `http://localhost:8080`
-- **PostgreSQL:** `localhost:5432`
-
-O banco utilizado pelo projeto é `portal_solicitacoes`.
-
-### Parando os containers
-
-Para parar os serviços:
-
-```bash
-docker compose down
-```
-
-O volume `postgres_data` é mantido ao utilizar apenas `docker compose down`, preservando os dados do banco.
-
-Para remover também o volume e apagar os dados persistidos do PostgreSQL:
-
-```bash
-docker compose down -v
-```
-
-> Utilize `docker compose down -v` somente quando realmente quiser recriar o banco do zero.
-
-### Reconstruindo após alterações
-
-Quando houver alterações no backend ou nas imagens Docker, utilize:
-
-```bash
-docker compose down
-docker compose up --build -d
-```
-
-Assim, os containers são recriados utilizando as versões atualizadas das imagens.
-
 ## Melhorias futuras
 
 As funcionalidades abaixo não fazem parte do escopo obrigatório do desafio, mas foram identificadas como possíveis evoluções do sistema:
 
-- Gerenciamento de usuários
 - Recuperação e alteração de senha
 - Controle de permissões por perfil
 - Paginação da listagem de solicitações
