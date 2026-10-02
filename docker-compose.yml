@@ -28,6 +28,9 @@ services:
       - postgres
 
   frontend:
+    build:
+      context: ./frontServices
+      dockerfile: Dockerfile
     image: portal-solicitacoes-frontend
     container_name: portal-solicitacoes-frontend
     ports:

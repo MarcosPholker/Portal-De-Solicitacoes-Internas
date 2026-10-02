@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse response = new ErrorResponse(
                 409,
-                "Conflict",
+                "conflict",
                 errors
         );
 
@@ -63,7 +63,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse response = new ErrorResponse(
                 401,
-                "Unauthorized",
+                "O usuario não esta logado",
                 errors
         );
 
@@ -95,5 +95,24 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentials(
+            InvalidCredentialsException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        errors.put("credentials", ex.getMessage());
+
+        ErrorResponse response = new ErrorResponse(
+                401,
+                "Não autorizado",
+                errors
+        );
+
+        return ResponseEntity
+                .status(401)
+                .body(response);
     }
 }

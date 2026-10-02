@@ -15,5 +15,21 @@ const api = axios.create({
 
     return config
  })
+
+ api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const isAuthenticationRequest = error.config?.url?.startsWith("/auth/")
+
+        if (error.response?.status === 401 && !isAuthenticationRequest) {
+            localStorage.removeItem("token")
+            if (window.location.pathname !== "/login") {
+                window.location.replace("/login")
+            }
+        }
+
+        return Promise.reject(error)
+    }
+ )
  
  export default api; // Replace with your API base URL

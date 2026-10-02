@@ -79,9 +79,23 @@ public class InternalRequestService {
         internalRequest.setTitle(internalRequestDTO.title());
         internalRequest.setDescription(internalRequestDTO.description());
         internalRequest.setInternalRequestCategory(internalRequestDTO.internalRequestCategory());
+        if (internalRequestDTO.internalRequestStatus() != null) {
+            internalRequest.setInternalRequestStatus(internalRequestDTO.internalRequestStatus());
+        }
 
         internalRequestRepository.save(internalRequest);
-        return internalRequestDTO;
+        return new InternalRequestDTO(
+                internalRequest.getId(),
+                internalRequest.getTitle(),
+                internalRequest.getDescription(),
+                internalRequest.getInternalRequestCategory(),
+                internalRequest.getCreationDate(),
+                internalRequest.getInternalRequestStatus(),
+                new UserResponseDTO(
+                        internalRequest.getUser().getId(),
+                        internalRequest.getUser().getUsername()
+                )
+        );
     }
 
     public void delete(UUID id){

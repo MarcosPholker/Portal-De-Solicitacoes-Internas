@@ -133,6 +133,82 @@ class InternalRequestServiceTest {
     }
 
     @Test
+    void deveAtualizarStatusAoEditarSolicitacao() {
+        UUID userId = UUID.randomUUID();
+        UUID requestId = UUID.randomUUID();
+        User user = new User();
+        user.setId(userId);
+        user.setUsername("Marcos");
+        user.setEmail("marcos@email.com");
+
+        InternalRequest request = new InternalRequest();
+        request.setId(requestId);
+        request.setTitle("Solicitação antiga");
+        request.setDescription("Descrição antiga");
+        request.setInternalRequestCategory(InternalRequestCategory.TI);
+        request.setInternalRequestStatus(InternalRequestStatus.OPEN);
+        request.setUser(user);
+
+        when(authentication.getName()).thenReturn("marcos@email.com");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        when(userRepository.findByEmail("marcos@email.com")).thenReturn(Optional.of(user));
+        when(internalRequestRepository.findById(requestId)).thenReturn(Optional.of(request));
+        when(internalRequestRepository.save(request)).thenReturn(request);
+
+        InternalRequestDTO dto = new InternalRequestDTO(
+                requestId,
+                "Solicitação atualizada",
+                "Descrição atualizada",
+                InternalRequestCategory.RH,
+                null,
+                InternalRequestStatus.IN_PROGRESS,
+                null
+        );
+
+        InternalRequestDTO result = internalRequestService.updateRequest(requestId, dto);
+
+        assertEquals(InternalRequestStatus.IN_PROGRESS, request.getInternalRequestStatus());
+        assertEquals(InternalRequestStatus.IN_PROGRESS, result.internalRequestStatus());
+        verify(internalRequestRepository).save(request);
+    }
+
+    @Test
+    void deveManterStatusAoEditarQuandoStatusNaoInformado() {
+        UUID userId = UUID.randomUUID();
+        UUID requestId = UUID.randomUUID();
+        User user = new User();
+        user.setId(userId);
+        user.setUsername("Marcos");
+        user.setEmail("marcos@email.com");
+
+        InternalRequest request = new InternalRequest();
+        request.setId(requestId);
+        request.setInternalRequestStatus(InternalRequestStatus.IN_PROGRESS);
+        request.setUser(user);
+
+        when(authentication.getName()).thenReturn("marcos@email.com");
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        when(userRepository.findByEmail("marcos@email.com")).thenReturn(Optional.of(user));
+        when(internalRequestRepository.findById(requestId)).thenReturn(Optional.of(request));
+        when(internalRequestRepository.save(request)).thenReturn(request);
+
+        InternalRequestDTO dto = new InternalRequestDTO(
+                requestId,
+                "Solicitação atualizada",
+                "Descrição atualizada",
+                InternalRequestCategory.TI,
+                null,
+                null,
+                null
+        );
+
+        InternalRequestDTO result = internalRequestService.updateRequest(requestId, dto);
+
+        assertEquals(InternalRequestStatus.IN_PROGRESS, request.getInternalRequestStatus());
+        assertEquals(InternalRequestStatus.IN_PROGRESS, result.internalRequestStatus());
+    }
+
+    @Test
     void naoDevePermitirAlterarSolicitacaoDeOutroUsuario() {
 
         UUID usuarioLogadoId = UUID.randomUUID();

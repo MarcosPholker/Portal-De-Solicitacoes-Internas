@@ -8,6 +8,7 @@ import com.portal.solicitacoes.internas.repositories.UserRepository;
 import com.portal.solicitacoes.internas.security.TokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.portal.solicitacoes.internas.exception.InvalidCredentialsException;
 
 @Service
 public class UserService {
@@ -36,9 +37,9 @@ public class UserService {
     }
 
     public String login(UserLoginDTO loginDTO){
-        User user = userRepositories.findByEmail(loginDTO.email()).orElseThrow(() -> new RuntimeException("email ou senha nao correspondem"));
+        User user = userRepositories.findByEmail(loginDTO.email()).orElseThrow(() -> new InvalidCredentialsException("email ou senha nao correspondem"));
         if(!passwordEncoder.matches(loginDTO.password(), user.getPassword())){
-            throw new RuntimeException("email ou senha nao correspondem");
+            throw new InvalidCredentialsException("email ou senha nao correspondem");
         }
         return tokenService.createToken(user.getId(), user.getEmail());
     }

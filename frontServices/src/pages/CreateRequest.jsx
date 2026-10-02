@@ -9,17 +9,19 @@ function CreateRequest() {
     const [title, setTitle] = useState("")
     const [category, setCategory] = useState("")
     const [description, setDescription] = useState("")
+    const [requestStatus, setRequestStatus] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
     const [isLoading, setIsLoading] = useState(Boolean(id))
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     useEffect(() => {
         if (!id) return
-        api.get(`/internalrequest/update/${id}`)
+        api.get(`/internalrequest/${id}`)
             .then(({ data }) => {
                 setTitle(data.title || "")
                 setCategory(data.internalRequestCategory || "")
                 setDescription(data.description || "")
+                setRequestStatus(data.internalRequestStatus || "")
             })
             .catch(() => setErrorMessage("Não foi possível carregar esta solicitação."))
             .finally(() => setIsLoading(false))
@@ -29,7 +31,12 @@ function CreateRequest() {
         event.preventDefault()
         setErrorMessage("")
         setIsSubmitting(true)
-        const requestData = { title, description, internalRequestCategory: category }
+        const requestData = {
+            title,
+            description,
+            internalRequestCategory: category,
+            ...(id && { internalRequestStatus: requestStatus })
+        }
 
         try {
             if (id) {
@@ -75,6 +82,16 @@ function CreateRequest() {
                             <option value="FINANCIAL">Financeiro</option>
                             <option value="INFRASTRUCTURE">Infraestrutura</option>
                         </select>
+                        {id && (
+                            <>
+                                <label htmlFor="request-status">Status</label>
+                                <select id="request-status" required value={requestStatus} onChange={(event) => setRequestStatus(event.target.value)}>
+                                    <option value="OPEN">Aberta</option>
+                                    <option value="IN_PROGRESS">Em andamento</option>
+                                    <option value="COMPLETED">Concluída</option>
+                                </select>
+                            </>
+                        )}
                         {errorMessage && <p className="form-error" role="alert">{errorMessage}</p>}
                         <div className="form-actions">
                             <Link className="secondary-link" to="/internalrequest">Cancelar</Link>
