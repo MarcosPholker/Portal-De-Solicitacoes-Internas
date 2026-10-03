@@ -14,7 +14,7 @@ services:
 
   backend:
     build:
-      context: ./solicitacoes-internas
+      context: ./backend
       dockerfile: Dockerfile
     container_name: portal-solicitacoes-backend
     ports:
@@ -29,7 +29,7 @@ services:
 
   frontend:
     build:
-      context: ./frontServices
+      context: ./frontend
       dockerfile: Dockerfile
     image: portal-solicitacoes-frontend
     container_name: portal-solicitacoes-frontend

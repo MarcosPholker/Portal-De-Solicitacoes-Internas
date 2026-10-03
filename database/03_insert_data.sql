@@ -1,0 +1,5 @@
+-- Dados iniciais do banco
+--
+-- Os usuários são cadastrados através da aplicação.
+-- Não são inseridas senhas diretamente neste script,
+-- pois as senhas devem ser armazenadas utilizando BCrypt.

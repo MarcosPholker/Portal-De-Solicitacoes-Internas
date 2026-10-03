@@ -1,2 +1,4 @@
 .env
 backup_portal.sql:
+.idea/
+*.iml
