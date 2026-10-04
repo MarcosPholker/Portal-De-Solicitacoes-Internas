@@ -1,5 +1,5 @@
 # Dicionário de Dados
-SISTEMA CRIADO A PARTIR DO JPA
+DATABASE CRIADO A PARTIR DO JPA/hibernate
 ## Banco de dados
 
 **Nome:** portal_solicitacoes
