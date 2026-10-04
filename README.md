@@ -66,8 +66,8 @@ O projeto está dividido em duas partes principais:
 
 ```text
 Portal-De-Solicitacoes-Internas/
-├── solicitacoes-internas/    # Backend - Spring Boot
-└── frontServices/            # Frontend - React
+├── backend/    # Backend - Spring Boot
+└── frontend/            # Frontend - React
 ```
 
 O frontend realiza requisições HTTP para a API desenvolvida em Spring Boot.
