@@ -1,5 +1,6 @@
 package com.portal.solicitacoes.internas.dto;
 
+import com.portal.solicitacoes.internas.entity.InternalRequest;
 import com.portal.solicitacoes.internas.enums.InternalRequestCategory;
 import com.portal.solicitacoes.internas.enums.InternalRequestStatus;
 import jakarta.validation.constraints.NotBlank;
@@ -14,14 +15,14 @@ public record InternalRequestDTO(
         UUID id,
 
         @NotBlank(message = "Título não pode ser vazio!")
-        @Size(max = 100, message = "título deve ter no máximo 100 caracteres")
+        @Size(max = 100, message = "Título deve ter no máximo 100 caracteres")
         String title,
 
         @NotBlank(message = "Descrição não pode ser vazia!")
-        @Size(max = 500, message = "descrição deve ter no máximo 500 caracteres")
+        @Size(max = 500, message = "Descrição deve ter no máximo 500 caracteres")
         String description,
 
-        @NotNull(message = "categoria da solicitação não pode ser nula!")
+        @NotNull(message = "Categoria da solicitação não pode ser nula!")
         InternalRequestCategory internalRequestCategory,
 
         LocalDateTime creationDate,
@@ -31,4 +32,21 @@ public record InternalRequestDTO(
         UserResponseDTO userResponseDTO
 
 ) {
+
+        public InternalRequestDTO(InternalRequest internalRequest) {
+
+                this(
+                        internalRequest.getId(),
+                        internalRequest.getTitle(),
+                        internalRequest.getDescription(),
+                        internalRequest.getInternalRequestCategory(),
+                        internalRequest.getCreationDate(),
+                        internalRequest.getInternalRequestStatus(),
+                        new UserResponseDTO(
+                                internalRequest.getUser().getId(),
+                                internalRequest.getUser().getUsername(), 
+                                internalRequest.getUser().getEmail())
+                );
+
+        }
 }

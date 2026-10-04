@@ -40,22 +40,9 @@ public class InternalRequestService {
         internalRequest.setInternalRequestStatus(InternalRequestStatus.OPEN);
         internalRequest.setUser(user);
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO(
-                internalRequest.getUser().getId(),
-                internalRequest.getUser().getUsername()
-        );
-
         internalRequestRepository.save(internalRequest);
 
-        return new InternalRequestDTO(
-                internalRequest.getId(),
-                internalRequest.getTitle(),
-                internalRequest.getDescription(),
-                internalRequest.getInternalRequestCategory(),
-                internalRequest.getCreationDate(),
-                internalRequest.getInternalRequestStatus(),
-                userResponseDTO
-        );
+        return new InternalRequestDTO(internalRequest);
     }
 
     public InternalRequestDTO updateRequest(UUID id, InternalRequestDTO internalRequestDTO) {
@@ -84,18 +71,7 @@ public class InternalRequestService {
         }
 
         internalRequestRepository.save(internalRequest);
-        return new InternalRequestDTO(
-                internalRequest.getId(),
-                internalRequest.getTitle(),
-                internalRequest.getDescription(),
-                internalRequest.getInternalRequestCategory(),
-                internalRequest.getCreationDate(),
-                internalRequest.getInternalRequestStatus(),
-                new UserResponseDTO(
-                        internalRequest.getUser().getId(),
-                        internalRequest.getUser().getUsername()
-                )
-        );
+        return new InternalRequestDTO(internalRequest);
     }
 
     public void delete(UUID id){
@@ -139,17 +115,9 @@ public class InternalRequestService {
         String email = authentication.getName();
         userRepository.findByEmail(email).orElseThrow(() -> new UserNotLoggedInException("Usuario não esta authenticado"));
 
-        InternalRequest ir = internalRequestRepository.findById(id).orElseThrow(() -> new NotFoundRequestException("solicitação não encontrada"));
+        InternalRequest internalRequest = internalRequestRepository.findById(id).orElseThrow(() -> new NotFoundRequestException("solicitação não encontrada"));
 
-        UserResponseDTO userResponseDTO = new UserResponseDTO(ir.getUser().getId(),ir.getUser().getUsername());
-
-        return new InternalRequestDTO(ir.getId()
-                , ir.getTitle()
-                , ir.getDescription()
-                , ir.getInternalRequestCategory()
-                , ir.getCreationDate()
-                , ir.getInternalRequestStatus()
-                , userResponseDTO);
+        return new InternalRequestDTO(internalRequest);
     }
 
     public List<InternalRequestListDTO> findAll(
@@ -234,34 +202,6 @@ public class InternalRequestService {
                 inProgress,
                 completed
         );
-    }
-
-    public List<InternalRequestListDTO> findMyRequests() {
-
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        String email = authentication.getName();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new UserNotLoggedInException(
-                                "Usuário não está autenticado"
-                        ));
-
-        List<InternalRequest> requests =
-                internalRequestRepository.findAllByUser(user);
-
-        return requests.stream()
-                .map(request -> new InternalRequestListDTO(
-                        request.getId(),
-                        request.getTitle(),
-                        request.getInternalRequestCategory(),
-                        request.getUser().getUsername(),
-                        request.getCreationDate(),
-                        request.getInternalRequestStatus()
-                ))
-                .toList();
     }
 
 }

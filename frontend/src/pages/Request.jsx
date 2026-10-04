@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import api from "../services/api"
 import "./Request.css"
@@ -10,6 +10,10 @@ function Request({ mineOnly = false }) {
     const [isLoading, setIsLoading] = useState(true)
     const [errorMessage, setErrorMessage] = useState("")
     const [isDeleting, setIsDeleting] = useState("")
+    const [expandedRequestId, setExpandedRequestId] = useState(null)
+    const [requestDetails, setRequestDetails] = useState({})
+    const [isLoadingDetails, setIsLoadingDetails] = useState("")
+    const [detailsError, setDetailsError] = useState("")
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -61,6 +65,27 @@ function Request({ mineOnly = false }) {
             setErrorMessage("Não foi possível excluir a solicitação. Tente novamente.")
         } finally {
             setIsDeleting("")
+        }
+    }
+
+    async function handleToggleDetails(requestId) {
+        if (expandedRequestId === requestId) {
+            setExpandedRequestId(null)
+            return
+        }
+
+        setExpandedRequestId(requestId)
+        setDetailsError("")
+        if (requestDetails[requestId]) return
+
+        setIsLoadingDetails(requestId)
+        try {
+            const response = await api.get(`/internalrequest/${requestId}`)
+            setRequestDetails((current) => ({ ...current, [requestId]: response.data }))
+        } catch {
+            setDetailsError("Não foi possível carregar os detalhes. Tente novamente.")
+        } finally {
+            setIsLoadingDetails("")
         }
     }
 
@@ -151,28 +176,91 @@ function Request({ mineOnly = false }) {
                                     <th>Solicitação</th>
                                     <th>Categoria</th>
                                     <th>Solicitante</th>
-                                    <th>Data</th>
                                     <th>Status</th>
-                                    {mineOnly && <th><span className="sr-only">Ações</span></th>}
+                                    <th>Detalhes</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {requests.map((request) => (
-                                    <tr key={request.id}>
-                                        <td className="request-title-cell">{request.title}</td>
-                                        <td>{categoryLabels[request.internalRequestCategory] || request.internalRequestCategory}</td>
-                                        <td>{request.username || "-"}</td>
-                                        <td>{request.creationDate ? new Date(request.creationDate).toLocaleDateString("pt-BR") : "-"}</td>
-                                        <td><span className={`status-badge status-${request.internalRequestStatus?.toLowerCase()}`}>{statusLabels[request.internalRequestStatus] || request.internalRequestStatus}</span></td>
-                                        {mineOnly && (
-                                            <td className="row-actions">
-                                                <Link to={`/internalrequest/${request.id}/edit`} aria-label={`Editar ${request.title}`}>Editar</Link>
-                                                <button type="button" onClick={() => handleDelete(request.id)} disabled={isDeleting === request.id} aria-label={`Excluir ${request.title}`}>
-                                                    {isDeleting === request.id ? "Excluindo..." : "Excluir"}
+                                    <Fragment key={request.id}>
+                                        <tr>
+                                            <td className="request-title-cell">{request.title}</td>
+                                            <td>{categoryLabels[request.internalRequestCategory] || request.internalRequestCategory}</td>
+                                            <td>{request.username || "-"}</td>
+                                            <td><span className={`status-badge status-${request.internalRequestStatus?.toLowerCase()}`}>{statusLabels[request.internalRequestStatus] || request.internalRequestStatus}</span></td>
+                                            <td>
+                                                <button
+                                                    className="details-toggle"
+                                                    type="button"
+                                                    onClick={() => handleToggleDetails(request.id)}
+                                                    aria-expanded={expandedRequestId === request.id}
+                                                    aria-controls={`request-details-${request.id}`}
+                                                >
+                                                    {expandedRequestId === request.id ? "Ocultar detalhes" : "Mostrar detalhes"}
                                                 </button>
                                             </td>
+                                        </tr>
+                                        {expandedRequestId === request.id && (
+                                            <tr id={`request-details-${request.id}`}>
+                                                <td className="request-details-cell" colSpan="5">
+                                                    {isLoadingDetails === request.id ? (
+                                                        <p role="status">Carregando detalhes...</p>
+                                                    ) : detailsError ? (
+                                                        <p className="form-error" role="alert">{detailsError}</p>
+                                                    ) : (
+                                                        <div className="request-details-content">
+                                                            <dl className="request-detail-grid">
+                                                                <div>
+                                                                    <dt>ID da solicitação</dt>
+                                                                    <dd>{requestDetails[request.id]?.id || request.id}</dd>
+                                                                </div>
+                                                                <div>
+                                                                    <dt>Título</dt>
+                                                                    <dd>{requestDetails[request.id]?.title || request.title}</dd>
+                                                                </div>
+                                                                <div>
+                                                                    <dt>Categoria</dt>
+                                                                    <dd>{categoryLabels[requestDetails[request.id]?.internalRequestCategory] || requestDetails[request.id]?.internalRequestCategory || "-"}</dd>
+                                                                </div>
+                                                                <div>
+                                                                    <dt>Data de criação</dt>
+                                                                    <dd>{requestDetails[request.id]?.creationDate ? new Date(requestDetails[request.id].creationDate).toLocaleString("pt-BR") : "-"}</dd>
+                                                                </div>
+                                                                <div>
+                                                                    <dt>Status</dt>
+                                                                    <dd>{statusLabels[requestDetails[request.id]?.internalRequestStatus] || requestDetails[request.id]?.internalRequestStatus || "-"}</dd>
+                                                                </div>
+                                                                <div className="request-detail-description">
+                                                                    <dt>Descrição</dt>
+                                                                    <dd>{requestDetails[request.id]?.description || "-"}</dd>
+                                                                </div>
+                                                                <div>
+                                                                    <dt>ID do solicitante</dt>
+                                                                    <dd>{requestDetails[request.id]?.userResponseDTO?.id || "-"}</dd>
+                                                                </div>
+                                                                <div>
+                                                                    <dt>Solicitante</dt>
+                                                                    <dd>{requestDetails[request.id]?.userResponseDTO?.username || "-"}</dd>
+                                                                </div>
+                                                                <div>
+                                                                    <dt>E-mail do solicitante</dt>
+                                                                    <dd>{requestDetails[request.id]?.userResponseDTO?.email || "-"}</dd>
+                                                                </div>
+                                                            </dl>
+                                                            {mineOnly && (
+                                                                <div className="row-actions">
+                                                                    <Link to={`/internalrequest/${request.id}/edit`}>Editar</Link>
+                                                                    <button type="button" onClick={() => handleDelete(request.id)} disabled={isDeleting === request.id}>
+                                                                        {isDeleting === request.id ? "Excluindo..." : "Excluir"}
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
                                         )}
-                                    </tr>
+                                    </Fragment>
                                 ))}
                             </tbody>
                         </table>

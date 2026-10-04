@@ -62,7 +62,8 @@ class InternalRequestControllerTest {
                 InternalRequestStatus.OPEN,
                 new UserResponseDTO(
                         userId,
-                        "Marcos"
+                        "Marcos",
+                        "email@gmail.com"
                 )
         );
 
