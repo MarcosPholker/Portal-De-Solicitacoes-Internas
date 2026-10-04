@@ -167,7 +167,7 @@ JWT_SECRET=dev_example_secret_change_this_key_9f7K2mQ8xL4pN6vR3tY5wE1sA0cD8hG7
 O `docker-compose.yml` utiliza a imagem `portal-solicitacoes-frontend` para o frontend. Caso essa imagem ainda não exista localmente, construa-a a partir do diretório do frontend:
 
 ```bash
-docker build -t portal-solicitacoes-frontend ./frontServices
+docker build -t portal-solicitacoes-frontend ./frontend
 ```
 
 ### 4. Subir a aplicação
@@ -238,7 +238,7 @@ Também é possível executar o backend e o frontend sem Docker.
 Entre no diretório do backend:
 
 ```bash
-cd solicitacoes-internas
+cd backend
 ```
 
 Execute a aplicação:
@@ -258,7 +258,7 @@ http://localhost:8080
 Entre no diretório do frontend:
 
 ```bash
-cd frontServices
+cd frontend
 ```
 
 Instale as dependências:
@@ -295,7 +295,7 @@ GET    /internalrequest
 GET    /internalrequest/{id}
 POST   /internalrequest
 PUT    /internalrequest/{id}
-DELETE /internalrequest/{id}
+DELETE /internalrequest/delete/{id}
 ```
 
 ### Filtros
