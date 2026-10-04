@@ -1,5 +1,5 @@
 # Dicionário de Dados
-
+SISTEMA CRIADO A PARTIR DO JPA
 ## Banco de dados
 
 **Nome:** portal_solicitacoes
